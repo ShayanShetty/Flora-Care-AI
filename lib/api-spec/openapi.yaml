@@ -3,13 +3,19 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: FloraCare API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: scans
+    description: Plant scan operations
+  - name: diseases
+    description: Disease encyclopedia operations
 paths:
   /healthz:
     get:
@@ -24,6 +30,198 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthInput"
+      responses:
+        "200":
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthInput"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /scans:
+    get:
+      operationId: listScans
+      tags: [scans]
+      summary: List all scans for the current user
+      responses:
+        "200":
+          description: List of scans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Scan"
+    post:
+      operationId: createScan
+      tags: [scans]
+      summary: Create a new plant scan (multipart upload)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ScanUpload"
+      responses:
+        "201":
+          description: Scan result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Scan"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /scans/{id}:
+    get:
+      operationId: getScan
+      tags: [scans]
+      summary: Get a scan by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Scan details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Scan"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /scans/stats:
+    get:
+      operationId: getScanStats
+      tags: [scans]
+      summary: Get scan statistics for the current user
+      responses:
+        "200":
+          description: Scan statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScanStats"
+
+  /diseases:
+    get:
+      operationId: listDiseases
+      tags: [diseases]
+      summary: List all diseases in the encyclopedia
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of diseases
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Disease"
+
+  /diseases/{id}:
+    get:
+      operationId: getDisease
+      tags: [diseases]
+      summary: Get a disease by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Disease details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Disease"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +232,156 @@ components:
       required:
         - status
 
+    AuthInput:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 3
+        password:
+          type: string
+          minLength: 4
+      required:
+        - username
+        - password
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - username
+        - createdAt
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        token:
+          type: string
+      required:
+        - user
+        - token
+
+    Scan:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        imageUrl:
+          type: string
+        plantName:
+          type: string
+        diseaseName:
+          type: string
+        confidence:
+          type: number
+        isHealthy:
+          type: boolean
+        description:
+          type: string
+        symptoms:
+          type: string
+        treatment:
+          type: string
+        prevention:
+          type: string
+        scannedAt:
+          type: string
+      required:
+        - id
+        - userId
+        - imageUrl
+        - plantName
+        - diseaseName
+        - confidence
+        - isHealthy
+        - description
+        - scannedAt
+
+    ScanStats:
+      type: object
+      properties:
+        totalScans:
+          type: integer
+        diseasedScans:
+          type: integer
+        healthyScans:
+          type: integer
+        recentScans:
+          type: array
+          items:
+            $ref: "#/components/schemas/Scan"
+        topDiseases:
+          type: array
+          items:
+            $ref: "#/components/schemas/DiseaseCount"
+      required:
+        - totalScans
+        - diseasedScans
+        - healthyScans
+        - recentScans
+        - topDiseases
+
+    DiseaseCount:
+      type: object
+      properties:
+        diseaseName:
+          type: string
+        count:
+          type: integer
+      required:
+        - diseaseName
+        - count
+
+    Disease:
+      type: object
+      properties:
+        id:
+          type: string
+        plantName:
+          type: string
+        diseaseName:
+          type: string
+        description:
+          type: string
+        symptoms:
+          type: string
+        treatment:
+          type: string
+        prevention:
+          type: string
+      required:
+        - id
+        - plantName
+        - diseaseName
+        - description
+        - symptoms
+        - treatment
+        - prevention
+
+    ScanUpload:
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+      required:
+        - image
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error

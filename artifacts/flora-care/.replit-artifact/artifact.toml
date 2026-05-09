@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "FloraCare"
+version = "1.0.0"
+id = "artifacts/flora-care"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21695
+
+[services.development]
+run = "pnpm --filter @workspace/flora-care run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/flora-care", "run", "build" ]
+publicDir = "artifacts/flora-care/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21695"
+BASE_PATH = "/"

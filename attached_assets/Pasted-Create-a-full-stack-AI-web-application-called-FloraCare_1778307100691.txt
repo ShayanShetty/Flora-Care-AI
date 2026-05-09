@@ -1,0 +1,180 @@
+Create a full-stack AI web application called “FloraCare – AI Powered Plant Health”.
+
+====================================
+🎨 UI DESIGN (VERY IMPORTANT)
+====================================
+- Premium modern UI with green + white theme
+- Clean, minimal, mobile-app style design
+- Rounded cards, soft shadows
+- Smooth animations and transitions
+- Fully responsive (mobile + desktop)
+
+- Bottom Navigation Bar:
+  • Dashboard
+  • Upload
+  • History
+  • Diseases
+
+====================================
+📄 PAGES
+====================================
+
+1) AUTH PAGE (LOGIN / SIGNUP)
+- Toggle between Login and Signup
+- Fields: Username, Password
+- Clean modern form UI
+- No external database
+- Use in-memory storage:
+  users = {}
+- Return proper JSON responses (no HTML errors)
+
+------------------------------------
+
+2) DASHBOARD
+- Title: “AI-Powered Plant Health in seconds”
+- Subtitle explaining plant disease detection
+- Feature highlights:
+  • Trusted Accuracy
+  • Instant Analysis
+
+------------------------------------
+
+3) UPLOAD PAGE
+- Upload plant leaf image
+- Show image preview
+- Stylish upload button
+- Optional drag & drop UI
+
+------------------------------------
+
+4) PROCESSING (BACKEND)
+- Resize image → 224x224
+- Normalize pixel values
+- Send to ML model
+
+------------------------------------
+
+5) RESULT PAGE (MOST IMPORTANT – MATCH DESIGN)
+- Show uploaded leaf image in a card
+- Red badge: “Disease Detected”
+- Plant name (e.g., HIBISCUS)
+- Disease name (bold):
+  Example:
+  “Leaf spot (likely fungal or bacterial leaf spot)”
+- Confidence bar (progress style)
+- Show percentage (e.g., 72%)
+- Show scan date & time
+- Buttons:
+  • Download Report
+  • Back to History
+
+------------------------------------
+
+6) HISTORY PAGE
+- Store previous scan results (temporary memory)
+- Show:
+  • Image
+  • Disease name
+  • Confidence
+- Click to view details
+
+------------------------------------
+
+7) DISEASE ENCYCLOPEDIA
+- Search bar
+- Show disease list
+- Display:
+  • Plant name
+  • Disease name
+  • Description
+  • Symptoms
+  • Treatment
+  • Prevention
+
+====================================
+⚙️ BACKEND (FLASK)
+====================================
+- Handle image upload
+- Load trained model (model.h5)
+- Predict disease
+- Return JSON responses ONLY
+- Fix JSON errors (no HTML response like <!DOCTYPE>)
+
+====================================
+🧠 MODEL (AI)
+====================================
+- Use Transfer Learning
+- Base model: MobileNetV2
+- Trained using PlantVillage dataset
+- Final model saved as: model.h5
+- Used only for prediction in web app
+
+====================================
+📂 DATA FILE
+====================================
+File: disease_data.json
+
+Contains:
+- Plant name
+- Disease name
+- Description
+- Symptoms
+- Treatment
+- Prevention
+
+- Small size (KB level)
+- Used for displaying extra info
+
+====================================
+☁️ CLOUD INTEGRATION
+====================================
+- Dataset taken from Kaggle (PlantVillage)
+- Model trained on Google Colab (cloud)
+- Pre-trained MobileNetV2 used from cloud libraries
+- Final trained model downloaded and used locally
+
+- Reduces local computation
+- Improves efficiency
+
+====================================
+🔄 SYSTEM FLOW
+====================================
+User → Login → Upload Image → Processing → Model Prediction → Fetch JSON → Display Result
+
+====================================
+❌ REMOVED COMPONENTS
+====================================
+- Removed Replit Database
+- Removed:
+  from replit import db
+- Removed all DB operations
+
+Reason:
+- Database got frozen
+- Caused login errors
+- Free plan limitations
+
+====================================
+✅ REPLACEMENT
+====================================
+- Used:
+  users = {}
+- Simple in-memory login system
+
+====================================
+⚠️ SPECIAL BEHAVIOR
+====================================
+- Even if disease not in dataset:
+  → Model predicts closest match
+
+- If JSON data not found:
+  → Show “Information not available”
+
+====================================
+🎯 GOAL
+====================================
+- Fully working plant disease detection web app
+- Clean premium UI
+- Smooth user experience
+- No database dependency
+- Ready for demo/presentation
